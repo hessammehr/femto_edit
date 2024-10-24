@@ -5,17 +5,35 @@ export function handleLink() {
     if (!selection.rangeCount) return;
 
     const range = selection.getRangeAt(0);
+    
+    // If we have a collapsed selection (just a caret), check if we're inside a link
+    if (range.collapsed) {
+        const node = range.startContainer;
+        const linkElement = (node.nodeType === Node.TEXT_NODE ? node.parentElement : node).closest('a');
+        
+        if (linkElement) {
+            showUrlInput(range, linkElement.href, linkElement);
+            return;
+        }
+    }
+
+    // Otherwise, handle selected text
     const linkInfo = findExistingLink(range);
     const selectedText = range.toString();
     
     if (!selectedText && !linkInfo.url) return;
-
-    const input = createUrlInput(range, linkInfo.url);
-    document.body.appendChild(input);
-    input.focus();
+    
+    showUrlInput(range, linkInfo.url);
 }
 
-function createUrlInput(range, defaultUrl) {
+function showUrlInput(range, defaultUrl = '', existingLink = null) {
+    const input = createUrlInput(range, defaultUrl, existingLink);
+    document.body.appendChild(input);
+    input.focus();
+    input.select();
+}
+
+function createUrlInput(range, defaultUrl, existingLink) {
     const input = document.createElement('input');
     input.type = 'text';
     input.className = 'pb-url-input';
@@ -32,7 +50,11 @@ function createUrlInput(range, defaultUrl) {
             e.preventDefault();
             const url = input.value.trim();
             if (url) {
-                createOrUpdateLink(range, url);
+                if (existingLink) {
+                    updateExistingLink(range, url, existingLink);
+                } else {
+                    createOrUpdateLink(range, url);
+                }
             }
             input.remove();
         } else if (e.key === 'Escape') {
@@ -42,6 +64,18 @@ function createUrlInput(range, defaultUrl) {
     };
 
     return input;
+}
+
+function updateExistingLink(range, url, linkElement) {
+    linkElement.href = url;
+    
+    // Maintain caret position
+    const selection = window.getSelection();
+    const newRange = document.createRange();
+    newRange.setStart(range.startContainer, range.startOffset);
+    newRange.setEnd(range.startContainer, range.startOffset);
+    selection.removeAllRanges();
+    selection.addRange(newRange);
 }
 
 function findExistingLink(range) {
@@ -77,6 +111,7 @@ function createOrUpdateLink(range, url) {
     link.textContent = textContent;
     range.insertNode(link);
     
+    // Maintain selection
     const selection = window.getSelection();
     selection.removeAllRanges();
     const newRange = document.createRange();
