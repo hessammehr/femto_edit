@@ -40,9 +40,13 @@ function createUrlInput(range, defaultUrl, existingLink) {
     input.value = defaultUrl || '';
     input.placeholder = 'Enter URL and press Enter';
 
-    const rect = range.getBoundingClientRect();
-    input.style.left = `${rect.left + window.scrollX}px`;
-    input.style.top = `${rect.bottom + window.scrollY + 5}px`;
+    // Position in the upper portion of the viewport, independent of scroll
+    const viewportWidth = window.innerWidth;
+    const left = Math.max(10, (viewportWidth - 300) / 2); // 300px is the width set in CSS
+    const top = 100; // Fixed distance from top of viewport, no scrollY added
+
+    input.style.left = `${left}px`;
+    input.style.top = `${top}px`;
 
     input.onkeydown = (e) => {
         e.stopPropagation();
@@ -62,6 +66,10 @@ function createUrlInput(range, defaultUrl, existingLink) {
             input.remove();
         }
     };
+
+    document.body.appendChild(input);
+    input.focus();
+    input.select();
 
     return input;
 }
