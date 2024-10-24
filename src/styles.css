@@ -1,0 +1,28 @@
+/* Visual feedback styles */
+*:hover {
+    outline: 1px dashed #007bff !important;
+}
+
+.pb-highlight-overlay {
+    position: absolute;
+    pointer-events: none;
+    outline: 2px solid #007bff !important;
+    z-index: 10000;
+}
+
+.pb-url-input {
+    position: fixed;
+    z-index: 10001;
+    padding: 8px;
+    background: white;
+    border: 1px solid #007bff;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    width: 300px;
+    font-family: system-ui;
+    font-size: 14px;
+}
+
+.pb-url-input:focus {
+    outline: none;
+    border-color: #0056b3;
+}
