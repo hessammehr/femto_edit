@@ -1,4 +1,4 @@
-# Minimalist Page Builder Requirements
+# FemtoEdit Requirements
 
 ## Core Functionality
 - Content-editable mode for the entire page

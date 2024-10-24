@@ -7,8 +7,8 @@ async function build() {
         bundle: true,
         minify: true,
         format: 'iife',
-        outfile: 'dist/page-builder.js',
-        globalName: 'PageBuilder',
+        outfile: 'dist/femto_edit.js',
+        globalName: 'FemtoEdit',
         define: {
             'process.env.NODE_ENV': '"production"'
         },
@@ -17,7 +17,7 @@ async function build() {
         }
     });
     
-    console.log('Build complete! Output created in dist/page-builder.js');
+    console.log('Build complete! Output created in dist/femto_edit.js');
 }
 
 build().catch(console.error);

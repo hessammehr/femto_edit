@@ -3,7 +3,7 @@ import { setupSelectionHandlers, updateOverlay } from './selection.js';
 import { setupKeyboardShortcuts } from './shortcuts.js';
 import { cleanupEmptyElements } from './elements.js';
 
-export function initializePageBuilder() {
+export function initializeFemtoEdit() {
     // Make the body content editable
     document.body.contentEditable = 'true';
     document.designMode = 'on';
@@ -34,7 +34,7 @@ export function initializePageBuilder() {
 }
 
 function showInstructions() {
-    alert('Page Builder activated!\n\n' +
+    alert('FemtoEdit activated!\n\n' +
           'Keyboard shortcuts:\n' +
           'Ctrl+Alt+D: Add new div\n' +
           'Ctrl+Alt+P: Add new paragraph\n' +
@@ -48,4 +48,4 @@ function showInstructions() {
 }
 
 // Auto-initialize
-initializePageBuilder();
+initializeFemtoEdit();
