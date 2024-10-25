@@ -1,9 +1,19 @@
 import { getCurrentElement } from './selection.js';
 import { handleLink } from './links.js';
-import { moveElement, promoteElement, convertToHeading } from './elements.js';
+import { moveElement, promoteElement, convertToHeading, createTagInput } from './elements.js';
 
 export function setupKeyboardShortcuts() {
     document.addEventListener('keydown', function(e) {
+        // Handle tag change (Ctrl + /)
+        if ((e.ctrlKey || e.metaKey) && e.key === '/') {
+            e.preventDefault();
+            const currentElement = getCurrentElement();
+            if (currentElement) {
+                createTagInput(currentElement);
+            }
+            return;
+        }
+
         // Handle heading conversion (Ctrl+Alt+1 through Ctrl+Alt+6)
         if (e.ctrlKey && e.altKey && e.keyCode >= 49 && e.keyCode <= 54) {
             e.preventDefault();
@@ -43,44 +53,26 @@ export function setupKeyboardShortcuts() {
         // Handle Ctrl+Alt combinations
         if (e.ctrlKey && e.altKey) {
             e.preventDefault();
-            handleCtrlAltShortcut(e.keyCode, currentElement);
+            switch (e.keyCode) {
+                case 88: // X key
+                    if (currentElement && currentElement !== document.body) {
+                        const parentElement = currentElement.parentElement;
+                        currentElement.remove();
+                        maintainFocus(parentElement);
+                    }
+                    break;
+                case 83: // S key
+                    saveCurrentPage();
+                    break;
+                case 37: // Left arrow
+                    moveElement(currentElement, 'up');
+                    break;
+                case 39: // Right arrow
+                    moveElement(currentElement, 'down');
+                    break;
+            }
         }
     });
-}
-
-function handleCtrlAltShortcut(keyCode, currentElement) {
-    const selection = window.getSelection();
-    const range = selection.getRangeAt(0);
-    const newElement = document.createElement('div');
-
-    switch (keyCode) {
-        case 68: // D key
-            newElement.innerHTML = '<div>New div</div>';
-            range.insertNode(newElement);
-            maintainFocus(newElement.firstElementChild);
-            break;
-        case 80: // P key
-            newElement.innerHTML = '<p>New paragraph</p>';
-            range.insertNode(newElement);
-            maintainFocus(newElement.firstElementChild);
-            break;
-        case 88: // X key
-            if (currentElement && currentElement !== document.body) {
-                const parentElement = currentElement.parentElement;
-                currentElement.remove();
-                maintainFocus(parentElement);
-            }
-            break;
-        case 83: // S key
-            saveCurrentPage();
-            break;
-        case 37: // Left arrow
-            moveElement(currentElement, 'up');
-            break;
-        case 39: // Right arrow
-            moveElement(currentElement, 'down');
-            break;
-    }
 }
 
 function saveCurrentPage() {
