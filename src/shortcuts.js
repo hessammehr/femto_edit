@@ -84,7 +84,31 @@ function handleCtrlAltShortcut(keyCode, currentElement) {
 }
 
 function saveCurrentPage() {
+    // Clean up the page before saving
+    const cleanupStyles = document.querySelectorAll('style');
+    cleanupStyles.forEach(style => {
+        if (style.textContent.includes('pb-highlight-overlay') || 
+            style.textContent.includes('pb-url-input')) {
+            style.remove();
+        }
+    });
+
+    // Remove overlay element
+    const overlay = document.querySelector('.pb-highlight-overlay');
+    if (overlay) overlay.remove();
+
+    // Remove contentEditable attribute from body
+    document.body.contentEditable = 'false';
+    document.designMode = 'off';
+
+    // Get the cleaned HTML
     const htmlContent = document.documentElement.outerHTML;
+
+    // Restore the editor state
+    document.body.contentEditable = 'true';
+    document.designMode = 'on';
+
+    // Create and trigger download
     const blob = new Blob([htmlContent], {type: 'text/html'});
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
