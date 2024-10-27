@@ -3,14 +3,14 @@
     outline: 1px dashed #007bff !important;
 }
 
-.pb-highlight-overlay {
+.fe-highlight-overlay {
     position: absolute;
     pointer-events: none;
     outline: 2px solid #007bff !important;
     z-index: 10000;
 }
 
-.pb-url-input {
+.fe-floating-input {
     position: fixed;
     z-index: 10001;
     padding: 8px;
@@ -22,7 +22,7 @@
     font-size: 14px;
 }
 
-.pb-url-input:focus {
+.fe-floating-input:focus {
     outline: none;
     border-color: #0056b3;
 }

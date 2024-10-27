@@ -1,51 +1,72 @@
-import css from './styles.css';
-import { setupSelectionHandlers, updateOverlay } from './selection.js';
-import { setupKeyboardShortcuts } from './shortcuts.js';
-import { cleanupEmptyElements } from './elements.js';
+import { setupCommands } from './commands';
+import { selectionManager } from './utils/selection';
+import styles from './styles.css';
 
-export function initializeFemtoEdit() {
-    // Make the body content editable
-    document.body.contentEditable = 'true';
-    document.designMode = 'on';
+class FemtoEdit {
+    constructor() {
+        this.initialized = false;
+    }
 
-    // Create and inject styles
-    const style = document.createElement('style');
-    style.textContent = css;
-    document.head.appendChild(style);
+    init() {
+        if (this.initialized) return;
 
-    // Create overlay element
-    const overlay = document.createElement('div');
-    overlay.className = 'pb-highlight-overlay';
-    document.body.appendChild(overlay);
+        // Initialize styles
+        const styleElement = document.createElement('style');
+        styleElement.textContent = styles;
+        document.head.appendChild(styleElement);
 
-    // Setup handlers
-    setupSelectionHandlers(overlay);
-    setupKeyboardShortcuts();
+        // Make page editable
+        document.body.contentEditable = 'true';
+        document.designMode = 'on';
 
-    // Setup mutation observer for cleanup
-    const observer = new MutationObserver(() => cleanupEmptyElements());
-    observer.observe(document.body, {
-        childList: true,
-        subtree: true
-    });
+        // Setup commands and keyboard shortcuts
+        setupCommands();
 
-    // Show instructions
-    showInstructions();
+        // Show instructions
+        this.showInstructions();
+
+        this.initialized = true;
+    }
+
+    destroy() {
+        if (!this.initialized) return;
+
+        // Clean up selection manager
+        selectionManager.cleanup();
+
+        // Remove contentEditable
+        document.body.contentEditable = 'false';
+        document.designMode = 'off';
+
+        // Remove styles
+        document.querySelectorAll('style').forEach(style => {
+            if (style.textContent.includes('fe-')) {
+                style.remove();
+            }
+        });
+
+        this.initialized = false;
+    }
+
+    showInstructions() {
+        alert(
+            'Page Builder activated!\n\n' +
+            'Keyboard shortcuts:\n' +
+            'Ctrl/Cmd+/: Change element tag\n' +
+            'Ctrl/Cmd+K: Add/edit link\n' +
+            'Shift+Enter: Add line break\n' +
+            'Ctrl/Cmd+↑: Promote element\n' +
+            'Ctrl/Cmd+Alt+←/→: Move element\n' +
+            'Ctrl/Cmd+Alt+S: Save page\n' +
+            'Ctrl/Cmd+Alt+1-6: Convert to heading'
+        );
+    }
 }
 
-function showInstructions() {
-    alert('FemtoEdit activated!\n\n' +
-          'Keyboard shortcuts:\n' +
-          'Ctrl+Alt+D: Add new div\n' +
-          'Ctrl+Alt+P: Add new paragraph\n' +
-          'Shift+Enter: Add line break\n' +
-          'Ctrl+Alt+X: Delete current element\n' +
-          'Ctrl+Alt+S: Save page\n' +
-          'Ctrl+Alt+←/→: Move element left/right\n' +
-          'Ctrl+↑: Promote element to parent level\n' +
-          'Ctrl+K: Add/edit link\n' +
-          'Ctrl+Alt+1-6: Convert to heading (H1-H6)');
-}
+// Export singleton instance
+export const femtoEdit = new FemtoEdit();
 
-// Auto-initialize
-initializeFemtoEdit();
+// Auto-initialize if loaded directly
+if (typeof window !== 'undefined') {
+    femtoEdit.init();
+}

@@ -1,5 +1,4 @@
 import * as esbuild from 'esbuild';
-import fs from 'fs/promises';
 
 async function build() {
     await esbuild.build({

@@ -3,11 +3,13 @@
     "version": "1.0.0",
     "type": "module",
     "scripts": {
-      "build": "node build.js"
+        "build": "node build.js"
     },
     "devDependencies": {
-      "esbuild": "^0.20.0",
-      "postcss": "^8.4.35",
-      "csso": "^5.0.5"
+        "esbuild": "^0.20.0"
+    },
+    "dependencies": {
+        "@floating-ui/dom": "^1.6.11",
+        "tinykeys": "^3.0.0"
     }
-  }
+}
