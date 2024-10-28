@@ -23,13 +23,19 @@ jobs:
         run: npm ci
 
       - name: Build
-        run: npm run build
+        run: |
+          npm run build
+          echo "javascript:((() => { $(cat dist/femto_edit.js)})())" > dist/femto_edit_bookmarklet.js
+      
+      - name: Read bookmarklet
+        id: read_bookmarklet
+        run: echo "::set-output name=bookmarklet::$(cat dist/femto_edit_bookmarklet.js)"
 
       - name: Create Release
         id: create_release
         uses: softprops/action-gh-release@v1
         with:
-          files: dist/femto_edit.js
+          files: dist/femto_edit.js, dist/femto_edit_bookmarklet.js
           tag_name: v${{ github.run_number }}
           name: Release v${{ github.run_number }}
           body: |
@@ -37,6 +43,8 @@ jobs:
             
             Changes in this release:
             ${{ github.event.head_commit.message }}
+
+            [Bookmarklet](${{ steps.read_bookmarklet.outputs.bookmarklet }})
           draft: false
           prerelease: false
         env:
