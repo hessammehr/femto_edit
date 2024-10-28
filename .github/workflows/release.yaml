@@ -21,15 +21,26 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
-
+    
       - name: Build
-        run: npm run build
-
+        run: |
+          npm run build
+          echo "javascript:((() => { $(cat dist/femto_edit.js)})())" > dist/femto_edit_bookmarklet.js
+    
+      - name: Create bookmarklet URL
+        id: bookmarklet
+        run: |
+          BOOKMARKLET=$(cat dist/femto_edit_bookmarklet.js)
+          # Create a markdown code block for the bookmarklet
+          echo "BOOKMARKLET<<EOF" >> $GITHUB_ENV
+          echo "Drag this to your bookmarks bar: <a href=\"${BOOKMARKLET}\">FemtoEdit</a>" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+    
       - name: Create Release
         id: create_release
         uses: softprops/action-gh-release@v1
         with:
-          files: dist/femto_edit.js
+          files: dist/femto_edit.js, dist/femto_edit_bookmarklet.js
           tag_name: v${{ github.run_number }}
           name: Release v${{ github.run_number }}
           body: |
@@ -37,6 +48,11 @@ jobs:
             
             Changes in this release:
             ${{ github.event.head_commit.message }}
+    
+            ## Installation
+            ${{ env.BOOKMARKLET }}
+    
+            You can also find the raw bookmarklet in the releases assets.
           draft: false
           prerelease: false
         env:
