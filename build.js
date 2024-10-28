@@ -1,4 +1,5 @@
 import * as esbuild from 'esbuild';
+import fs from 'fs';
 
 async function build() {
     await esbuild.build({
@@ -17,6 +18,11 @@ async function build() {
     });
     
     console.log('Build complete! Output created in dist/femto_edit.js');
+
+    // read output file
+    const text = fs.readFileSync('dist/femto_edit.js', 'utf8');
+    let bookmarklet = `javascript:((() => { ${text} })())`;
+    fs.writeFileSync('dist/femto_edit_bookmarklet.js', bookmarklet);
 }
 
 build().catch(console.error);
