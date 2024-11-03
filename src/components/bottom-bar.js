@@ -1,4 +1,3 @@
-import { tinykeys } from 'tinykeys';
 import { createElement } from '../utils/dom';
 
 export class BottomBar {

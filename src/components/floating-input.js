@@ -1,5 +1,3 @@
-import { computePosition, flip, shift, offset } from '@floating-ui/dom';
-
 export class FloatingInput {
     constructor(options = {}) {
         this.input = document.createElement('input');
@@ -18,15 +16,20 @@ export class FloatingInput {
 
     // Shows the input relative to a reference element
     show(referenceEl, onSubmit, onCancel) {
-        this.referenceEl = referenceEl;
         this.onSubmit = onSubmit;
         this.onCancel = onCancel;
 
-        // Add to DOM first so we can measure it
+        // Add to DOM
         document.body.appendChild(this.input);
         
-        // Position the input
-        this.updatePosition();
+        // Center in viewport
+        Object.assign(this.input.style, {
+            position: 'fixed',
+            left: '50%',
+            top: '50%',
+            transform: 'translate(-50%, -50%)',
+            maxWidth: '90vw'
+        });
 
         // Listen for keyboard events
         this.input.addEventListener('keydown', this.handleKeydown);
@@ -34,26 +37,6 @@ export class FloatingInput {
         // Focus and select text
         this.input.focus();
         this.input.select();
-
-        // Listen for scroll/resize
-        window.addEventListener('scroll', this.updatePosition.bind(this), true);
-        window.addEventListener('resize', this.updatePosition.bind(this));
-    }
-
-    updatePosition() {
-        computePosition(this.referenceEl, this.input, {
-            placement: 'bottom',
-            middleware: [
-                offset(6),  // 6px spacing
-                flip(),     // flip if no space below
-                shift({ padding: 10 })  // keep 10px from viewport edges
-            ]
-        }).then(({x, y}) => {
-            Object.assign(this.input.style, {
-                left: `${x}px`,
-                top: `${y}px`
-            });
-        });
     }
 
     handleKeydown(e) {
@@ -72,8 +55,6 @@ export class FloatingInput {
     }
 
     cleanup() {
-        window.removeEventListener('scroll', this.updatePosition.bind(this), true);
-        window.removeEventListener('resize', this.updatePosition.bind(this));
         this.input.removeEventListener('keydown', this.handleKeydown);
         this.input.remove();
     }

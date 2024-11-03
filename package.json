@@ -9,7 +9,6 @@
         "esbuild": "^0.20.0"
     },
     "dependencies": {
-        "@floating-ui/dom": "^1.6.11",
         "tinykeys": "^3.0.0"
     }
 }
